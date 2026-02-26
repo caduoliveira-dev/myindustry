@@ -1,5 +1,7 @@
 package com.projedata.myindustry.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -23,5 +25,12 @@ public class ProductEntity {
     private UUID id;
 
     private String name;
+
+    @JsonIgnore
     private Integer price;
+
+    @JsonProperty("price")
+    public Double getPriceInReais() {
+        return price == null ? null : price / 100.0;
+    }
 }

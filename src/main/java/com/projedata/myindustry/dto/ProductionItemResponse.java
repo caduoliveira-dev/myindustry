@@ -5,7 +5,7 @@ import java.util.UUID;
 public record ProductionItemResponse(
         UUID productId,
         String productName,
-        Integer unitPrice,
+        Double unitPrice,
         Integer unitsToProduce,
-        Integer totalValue
+        Double totalValue
 ) {}

@@ -18,7 +18,7 @@ public class ProductService {
     public ProductEntity create(ProductRequest request) {
         ProductEntity entity = new ProductEntity();
         entity.setName(request.name());
-        entity.setPrice(request.price());
+        entity.setPrice((int) (request.price() * 100));
         return repository.save(entity);
     }
 
@@ -32,7 +32,7 @@ public class ProductService {
     public ProductEntity update(UUID id, ProductRequest request) {
         ProductEntity entity = findById(id);
         entity.setName(request.name());
-        entity.setPrice(request.price());
+        entity.setPrice((int) (request.price() * 100));
         return repository.save(entity);
     }
 

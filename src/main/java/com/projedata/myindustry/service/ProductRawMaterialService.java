@@ -54,7 +54,7 @@ public class ProductRawMaterialService {
                 availableStock.put(rm.getId(), rm.getStockQuantity()));
 
         List<ProductionItemResponse> items = new ArrayList<>();
-        int grandTotal = 0;
+        double grandTotal = 0;
 
         for (ProductEntity product : products) {
             List<ProductRawMaterialEntity> associations = productRawMaterialRepository.findByIdProductId(product.getId());
@@ -77,12 +77,13 @@ public class ProductRawMaterialService {
                 availableStock.merge(rmId, -consumed, Integer::sum);
             }
 
-            int totalValue = unitsToProduce * product.getPrice();
+            double unitPrice = product.getPrice() / 100.0;
+            double totalValue = unitsToProduce * unitPrice;
             grandTotal += totalValue;
             items.add(new ProductionItemResponse(
                     product.getId(),
                     product.getName(),
-                    product.getPrice(),
+                    unitPrice,
                     unitsToProduce,
                     totalValue
             ));
