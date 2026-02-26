@@ -45,4 +45,49 @@ public class ProductRawMaterialService {
     public List<ProductRawMaterialEntity> findByProduct(UUID productId) {
         return productRawMaterialRepository.findByIdProductId(productId);
     }
+
+    public ProductionSuggestionResponse suggestProduction() {
+        List<ProductEntity> products = productRepository.findAllByOrderByPriceDesc();
+
+        Map<UUID, Integer> availableStock = new HashMap<>();
+        rawMaterialRepository.findAll().forEach(rm ->
+                availableStock.put(rm.getId(), rm.getStockQuantity()));
+
+        List<ProductionItemResponse> items = new ArrayList<>();
+        int grandTotal = 0;
+
+        for (ProductEntity product : products) {
+            List<ProductRawMaterialEntity> associations = productRawMaterialRepository.findByIdProductId(product.getId());
+
+            if (associations.isEmpty()) continue;
+
+            int unitsToProduce = Integer.MAX_VALUE;
+            for (ProductRawMaterialEntity assoc : associations) {
+                UUID rmId = assoc.getRawMaterial().getId();
+                int stock = availableStock.getOrDefault(rmId, 0);
+                int units = stock / assoc.getRequiredQuantity();
+                unitsToProduce = Math.min(unitsToProduce, units);
+            }
+
+            if (unitsToProduce <= 0) continue;
+
+            for (ProductRawMaterialEntity assoc : associations) {
+                UUID rmId = assoc.getRawMaterial().getId();
+                int consumed = unitsToProduce * assoc.getRequiredQuantity();
+                availableStock.merge(rmId, -consumed, Integer::sum);
+            }
+
+            int totalValue = unitsToProduce * product.getPrice();
+            grandTotal += totalValue;
+            items.add(new ProductionItemResponse(
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    unitsToProduce,
+                    totalValue
+            ));
+        }
+
+        return new ProductionSuggestionResponse(items, grandTotal);
+    }
 }
