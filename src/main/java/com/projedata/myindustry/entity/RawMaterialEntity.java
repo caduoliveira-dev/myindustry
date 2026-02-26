@@ -24,5 +24,5 @@ public class RawMaterialEntity {
     private UUID id;
 
     private String name;
-    private Integer stock_quantity;
+    private Integer stockQuantity;
 }
