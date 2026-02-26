@@ -1,0 +1,43 @@
+package com.projedata.myindustry.service;
+
+import com.projedata.myindustry.dto.ProductRequest;
+import com.projedata.myindustry.entity.ProductEntity;
+import com.projedata.myindustry.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductRepository repository;
+
+    public ProductEntity create(ProductRequest request) {
+        ProductEntity entity = new ProductEntity();
+        entity.setName(request.name());
+        entity.setPrice(request.price());
+        return repository.save(entity);
+    }
+
+    public ProductEntity findById(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    public List<ProductEntity> findAll() { return  repository.findAll(); }
+
+    public ProductEntity update(UUID id, ProductRequest request) {
+        ProductEntity entity = findById(id);
+        entity.setName(request.name());
+        entity.setPrice(request.price());
+        return repository.save(entity);
+    }
+
+    public void delete(UUID id){
+        findById(id);
+        repository.deleteById(id);
+    }
+}
