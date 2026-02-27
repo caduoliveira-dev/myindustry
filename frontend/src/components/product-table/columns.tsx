@@ -1,8 +1,8 @@
 import { createContext, useContext } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Product } from "@/types/Product";
-import { MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +10,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 export const ProductActionsContext = createContext<{
-  onView: (product: Product) => void
-  onUpdate: (product: Product) => void
-  onDelete: (product: Product) => void
+  onView: (product: Product) => void;
+  onUpdate: (product: Product) => void;
+  onDelete: (product: Product) => void;
 }>({ onView: () => {}, onUpdate: () => {}, onDelete: () => {} });
 
 export const columns: ColumnDef<Product>[] = [
@@ -26,12 +26,13 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "price",
     header: "Price",
+    cell: ({ row }) => <span>$ {row.getValue("price")}</span>,
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const product = row.original
-      const { onView, onUpdate, onDelete } = useContext(ProductActionsContext)
+      const product = row.original;
+      const { onView, onUpdate, onDelete } = useContext(ProductActionsContext);
 
       return (
         <DropdownMenu>
@@ -44,12 +45,21 @@ export const columns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onView(product)}>View</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onUpdate(product)}>Update</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={() => onDelete(product)}>Delete</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onView(product)}>
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onUpdate(product)}>
+              Update
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDelete(product)}
+            >
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
 ];

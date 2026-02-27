@@ -173,7 +173,11 @@ export function ProductDetailPage() {
                         }
                         className="border rounded-md px-2 py-1 text-sm w-16 text-center"
                       />
-                      <Button size="sm" onClick={() => handleAssociate(m.id)}>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleAssociate(m.id)}
+                      >
                         Add
                       </Button>
                     </div>
