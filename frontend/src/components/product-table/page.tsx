@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { columns, ProductActionsContext } from "./columns";
 import type { Product } from "@/types/Product";
 import type { PageResponse } from "@/types/Page";
+import type { ProductionSuggestion } from "@/types/ProductionSuggestion";
 import { DataTable } from "./data-table";
 import { UpdateProductDialog } from "./update-product-dialog";
 import { DeleteProductDialog } from "./delete-product-dialog";
@@ -24,6 +25,10 @@ export default function ProductPage() {
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [suggestion, setSuggestion] = useState<ProductionSuggestion | null>(
+    null,
+  );
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false);
 
   function fetchPage(pageIndex: number, pageSize: number, name: string) {
     const params = new URLSearchParams({
@@ -39,12 +44,10 @@ export default function ProductPage() {
       });
   }
 
-  // Fetch on pagination change (captures current nameFilter from closure)
   useEffect(() => {
     fetchPage(pagination.pageIndex, pagination.pageSize, nameFilter);
   }, [pagination]);
 
-  // Debounce filter: after 300ms, reset to page 0 and fetch
   useEffect(() => {
     const timer = setTimeout(() => {
       if (pagination.pageIndex === 0) {
@@ -68,6 +71,14 @@ export default function ProductPage() {
     fetchPage(pagination.pageIndex, pagination.pageSize, nameFilter);
   }
 
+  function handleGenerateSuggestion() {
+    setLoadingSuggestion(true);
+    fetch("http://localhost:3000/production/suggestion")
+      .then((res) => res.json())
+      .then((result: ProductionSuggestion) => setSuggestion(result))
+      .finally(() => setLoadingSuggestion(false));
+  }
+
   return (
     <ProductActionsContext.Provider
       value={{
@@ -87,20 +98,77 @@ export default function ProductPage() {
       }}
     >
       <div className="container mx-auto">
-        <div className="flex justify-start mb-2">
-          <Button variant="outline" onClick={() => setCreateDialogOpen(true)}>
-            Add Product
-          </Button>
+        <div className="flex gap-6 items-start">
+          <div className="flex-1 min-w-100">
+            <div className="flex justify-start mb-2">
+              <Button
+                variant="outline"
+                onClick={() => setCreateDialogOpen(true)}
+              >
+                Add Product
+              </Button>
+            </div>
+            <DataTable
+              columns={columns}
+              data={data}
+              pageCount={pageCount}
+              pagination={pagination}
+              onPaginationChange={setPagination}
+              nameFilter={nameFilter}
+              onNameFilterChange={setNameFilter}
+            />
+          </div>
+
+          <div className="w-72 shrink-0 border rounded-md p-4 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-sm">Production Suggestion</h3>
+              <Button
+                size="sm"
+                onClick={handleGenerateSuggestion}
+                disabled={loadingSuggestion}
+              >
+                {loadingSuggestion ? "Loading..." : "Generate"}
+              </Button>
+            </div>
+
+            {suggestion === null ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                Click Generate to see a suggestion.
+              </p>
+            ) : suggestion.items.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                No production possible with current stock.
+              </p>
+            ) : (
+              <>
+                <div className="flex flex-col gap-1">
+                  {suggestion.items.map((item) => (
+                    <div
+                      key={item.productId}
+                      className="flex items-center justify-between text-sm py-1 border-b last:border-0"
+                    >
+                      <div>
+                        <p className="font-medium">{item.productName}</p>
+                        <p className="text-muted-foreground text-xs">
+                          {item.unitsToProduce}x · ${item.unitPrice.toFixed(2)}{" "}
+                          each
+                        </p>
+                      </div>
+                      <span className="font-medium">
+                        ${item.totalValue.toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between text-sm font-semibold border-t pt-2">
+                  <span>Grand Total</span>
+                  <span>${suggestion.grandTotal.toFixed(2)}</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-        <DataTable
-          columns={columns}
-          data={data}
-          pageCount={pageCount}
-          pagination={pagination}
-          onPaginationChange={setPagination}
-          nameFilter={nameFilter}
-          onNameFilterChange={setNameFilter}
-        />
+
         <UpdateProductDialog
           product={editingProduct}
           open={updateDialogOpen}
