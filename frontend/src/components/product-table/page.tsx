@@ -97,9 +97,9 @@ export default function ProductPage() {
         },
       }}
     >
-      <div className="container mx-auto">
-        <div className="flex gap-6 items-start">
-          <div className="flex-1 min-w-100">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+          <div className="flex-1 w-full">
             <div className="flex justify-start mb-2">
               <Button
                 variant="outline"
@@ -119,7 +119,7 @@ export default function ProductPage() {
             />
           </div>
 
-          <div className="w-72 shrink-0 border rounded-md p-4 flex flex-col gap-3">
+          <div className="w-full lg:w-72 lg:shrink-0 border rounded-md p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm">Production Suggestion</h3>
               <Button

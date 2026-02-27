@@ -95,9 +95,16 @@ export function ProductDetailPage() {
   if (!product) return null;
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="min-w-200 flex flex-col gap-4">
+    <div className="min-h-screen p-4">
+      <div className="w-full max-w-4xl mx-auto flex flex-col gap-4">
         <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate({ to: "/" })}
+          >
+            ← Back
+          </Button>
           <div>
             <h2 className="text-lg font-semibold">{product.name}</h2>
             <p className="text-sm text-muted-foreground">
@@ -106,7 +113,7 @@ export function ProductDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="flex flex-col gap-2">
             <h3 className="font-medium text-sm">Associated Raw Materials</h3>
             <div className="rounded-md border overflow-hidden">
@@ -207,15 +214,6 @@ export function ProductDetailPage() {
               </Button>
             </div>
           </div>
-        </div>
-        <div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate({ to: "/" })}
-          >
-            ← Back
-          </Button>
         </div>
       </div>
     </div>

@@ -4,8 +4,8 @@ import RawMaterialPage from "./components/rawmaterial-table/page";
 
 export function App() {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <Tabs defaultValue="products" className="min-w-100">
+    <div className="min-h-screen flex flex-col items-center justify-start p-4 sm:justify-center">
+      <Tabs defaultValue="products" className="w-full max-w-5xl">
           <TabsList>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="raw-materials">Raw Materials</TabsTrigger>
