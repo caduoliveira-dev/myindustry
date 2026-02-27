@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,12 +72,6 @@ public class ProductRawMaterialService {
 
             if (unitsToProduce <= 0) continue;
 
-            for (ProductRawMaterialEntity assoc : associations) {
-                UUID rmId = assoc.getRawMaterial().getId();
-                int consumed = unitsToProduce * assoc.getRequiredQuantity();
-                availableStock.merge(rmId, -consumed, Integer::sum);
-            }
-
             double unitPrice = product.getPrice() / 100.0;
             double totalValue = unitsToProduce * unitPrice;
             grandTotal += totalValue;
@@ -88,6 +83,8 @@ public class ProductRawMaterialService {
                     totalValue
             ));
         }
+
+        items.sort(Comparator.comparingDouble(ProductionItemResponse::totalValue).reversed());
 
         return new ProductionSuggestionResponse(items, grandTotal);
     }
