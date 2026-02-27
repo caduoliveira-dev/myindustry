@@ -6,7 +6,9 @@ import com.projedata.myindustry.repository.RawMaterialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
 @Service
@@ -27,8 +29,8 @@ public class RawMaterialService {
                 .orElseThrow(() -> new RuntimeException("Raw material not found"));
     }
 
-    public List<RawMaterialEntity> findAll() {
-        return repository.findAll();
+    public Page<RawMaterialEntity> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public RawMaterialEntity update(UUID id, RawMaterialRequest request) {

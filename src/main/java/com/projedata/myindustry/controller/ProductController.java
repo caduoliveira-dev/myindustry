@@ -1,16 +1,14 @@
 package com.projedata.myindustry.controller;
 
 import com.projedata.myindustry.dto.ProductRequest;
-import com.projedata.myindustry.dto.RawMaterialRequest;
 import com.projedata.myindustry.entity.ProductEntity;
-import com.projedata.myindustry.entity.RawMaterialEntity;
 import com.projedata.myindustry.service.ProductService;
-import com.projedata.myindustry.service.RawMaterialService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,7 +28,11 @@ public class ProductController {
     public ProductEntity findById(@PathVariable UUID id) { return service.findById(id); }
 
     @GetMapping
-    public List<ProductEntity> findAll() { return service.findAll(); }
+    public Page<ProductEntity> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return service.findAll(PageRequest.of(page, size));
+    }
 
     @PutMapping("/{id}")
     public ProductEntity update(@PathVariable UUID id, @RequestBody ProductRequest request) {

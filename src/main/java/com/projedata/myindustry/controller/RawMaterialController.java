@@ -4,10 +4,11 @@ import com.projedata.myindustry.dto.RawMaterialRequest;
 import com.projedata.myindustry.entity.RawMaterialEntity;
 import com.projedata.myindustry.service.RawMaterialService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,8 +30,10 @@ public class RawMaterialController {
     }
 
     @GetMapping
-    public List<RawMaterialEntity> findAll() {
-        return service.findAll();
+    public Page<RawMaterialEntity> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return service.findAll(PageRequest.of(page, size));
     }
 
     @PutMapping("/{id}")

@@ -6,7 +6,9 @@ import com.projedata.myindustry.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
 @Service
@@ -27,7 +29,9 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
-    public List<ProductEntity> findAll() { return  repository.findAll(); }
+    public Page<ProductEntity> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 
     public ProductEntity update(UUID id, ProductRequest request) {
         ProductEntity entity = findById(id);
