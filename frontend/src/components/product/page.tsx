@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { columns, ProductActionsContext } from "./columns";
+import { columns, ProductActionsContext } from "./table/columns";
 import type { Product } from "@/types/Product";
 import type { PageResponse } from "@/types/Page";
 import type { ProductionSuggestion } from "@/types/ProductionSuggestion";
-import { DataTable } from "./data-table";
-import { UpdateProductDialog } from "./update-product-dialog";
-import { DeleteProductDialog } from "./delete-product-dialog";
-import { CreateProductDialog } from "./create-product-dialog";
+import { DataTable } from "./table/data-table";
+import { UpdateProductDialog } from "./dialog/update-product-dialog";
+import { DeleteProductDialog } from "./dialog/delete-product-dialog";
+import { CreateProductDialog } from "./dialog/create-product-dialog";
 import { Button } from "@/components/ui/button";
 import type { PaginationState } from "@tanstack/react-table";
 

@@ -6,7 +6,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import type { ColumnDef, PaginationState, OnChangeFn } from "@tanstack/react-table";
+import type {
+  ColumnDef,
+  PaginationState,
+  OnChangeFn,
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -17,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

@@ -1,6 +1,11 @@
-import { createRouter, createRoute, createRootRoute, Outlet } from "@tanstack/react-router";
+import {
+  createRouter,
+  createRoute,
+  createRootRoute,
+  Outlet,
+} from "@tanstack/react-router";
 import { App } from "./App";
-import { ProductDetailPage } from "./components/product-table/product-detail-page";
+import { ProductDetailPage } from "./components/product/product-detail-page";
 
 const rootRoute = createRootRoute({ component: Outlet });
 

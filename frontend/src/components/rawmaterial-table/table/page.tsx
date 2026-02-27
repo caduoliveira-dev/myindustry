@@ -3,9 +3,9 @@ import { columns, RawMaterialActionsContext } from "./columns";
 import type { RawMaterial } from "@/types/RawMaterial";
 import type { PageResponse } from "@/types/Page";
 import { DataTable } from "./data-table";
-import { UpdateRawMaterialDialog } from "./update-rawmaterial-dialog";
-import { DeleteRawMaterialDialog } from "./delete-rawmaterial-dialog";
-import { CreateRawMaterialDialog } from "./create-rawmaterial-dialog";
+import { UpdateRawMaterialDialog } from "../dialog/update-rawmaterial-dialog";
+import { DeleteRawMaterialDialog } from "../dialog/delete-rawmaterial-dialog";
+import { CreateRawMaterialDialog } from "../dialog/create-rawmaterial-dialog";
 import { Button } from "@/components/ui/button";
 import type { PaginationState } from "@tanstack/react-table";
 
@@ -39,12 +39,10 @@ export default function RawMaterialPage() {
       });
   }
 
-  // Fetch on pagination change (captures current nameFilter from closure)
   useEffect(() => {
     fetchPage(pagination.pageIndex, pagination.pageSize, nameFilter);
   }, [pagination]);
 
-  // Debounce filter: after 300ms, reset to page 0 and fetch
   useEffect(() => {
     const timer = setTimeout(() => {
       if (pagination.pageIndex === 0) {
