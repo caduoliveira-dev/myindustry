@@ -1,65 +1,108 @@
-import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "@tanstack/react-router"
-import type { Product } from "@/types/Product"
-import type { RawMaterial } from "@/types/RawMaterial"
-import type { ProductRawMaterial } from "@/types/ProductRawMaterial"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "@tanstack/react-router";
+import type { Product } from "@/types/Product";
+import type { RawMaterial } from "@/types/RawMaterial";
+import type { ProductRawMaterial } from "@/types/ProductRawMaterial";
+import type { PageResponse } from "@/types/Page";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function ProductDetailPage() {
-  const { productId } = useParams({ from: "/products/$productId" })
-  const navigate = useNavigate()
+  const { productId } = useParams({ from: "/products/$productId" });
+  const navigate = useNavigate();
 
-  const [product, setProduct] = useState<Product | null>(null)
-  const [associated, setAssociated] = useState<ProductRawMaterial[]>([])
-  const [allMaterials, setAllMaterials] = useState<RawMaterial[]>([])
-  const [quantities, setQuantities] = useState<Record<string, number>>({})
+  const [product, setProduct] = useState<Product | null>(null);
+  const [associated, setAssociated] = useState<ProductRawMaterial[]>([]);
+  const [allMaterials, setAllMaterials] = useState<RawMaterial[]>([]);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const [rmFilter, setRmFilter] = useState("");
+  const [rmPageIndex, setRmPageIndex] = useState(0);
+  const [rmPageCount, setRmPageCount] = useState(0);
+  const RM_PAGE_SIZE = 10;
+
+  function fetchRawMaterials(pageIndex: number, name: string) {
+    const params = new URLSearchParams({
+      page: String(pageIndex),
+      size: String(RM_PAGE_SIZE),
+    });
+    if (name) params.set("name", name);
+    fetch(`http://localhost:3000/raw-materials?${params}`)
+      .then((res) => res.json())
+      .then((result: PageResponse<RawMaterial>) => {
+        setAllMaterials(result.content);
+        setRmPageCount(result.totalPages);
+      });
+  }
 
   useEffect(() => {
     fetch(`http://localhost:3000/products/${productId}`)
       .then((res) => res.json())
-      .then(setProduct)
+      .then(setProduct);
 
     fetch(`http://localhost:3000/products/${productId}/raw-materials`)
       .then((res) => res.json())
-      .then(setAssociated)
+      .then(setAssociated);
+  }, [productId]);
 
-    fetch("http://localhost:3000/raw-materials?size=1000")
-      .then((res) => res.json())
-      .then((result) => setAllMaterials(result.content))
-  }, [productId])
+  // Fetch on page change
+  useEffect(() => {
+    fetchRawMaterials(rmPageIndex, rmFilter);
+  }, [rmPageIndex]);
 
-  const associatedIds = new Set(associated.map((a) => a.rawMaterial.id))
+  // Debounce filter: reset to page 0 and fetch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (rmPageIndex === 0) {
+        fetchRawMaterials(0, rmFilter);
+      } else {
+        setRmPageIndex(0);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [rmFilter]);
+
+  const associatedIds = new Set(associated.map((a) => a.rawMaterial.id));
+  const unassociated = allMaterials.filter((m) => !associatedIds.has(m.id));
 
   async function handleAssociate(rawMaterialId: string) {
-    const requiredQuantity = quantities[rawMaterialId] ?? 1
-    const res = await fetch(`http://localhost:3000/products/${productId}/raw-materials`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rawMaterialId, requiredQuantity }),
-    })
-    const created: ProductRawMaterial = await res.json()
-    setAssociated((prev) => [...prev, created])
-    setQuantities((prev) => ({ ...prev, [rawMaterialId]: 1 }))
+    const requiredQuantity = quantities[rawMaterialId] ?? 1;
+    const res = await fetch(
+      `http://localhost:3000/products/${productId}/raw-materials`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawMaterialId, requiredQuantity }),
+      },
+    );
+    const created: ProductRawMaterial = await res.json();
+    setAssociated((prev) => [...prev, created]);
+    setQuantities((prev) => ({ ...prev, [rawMaterialId]: 1 }));
   }
 
   async function handleRemove(rawMaterialId: string) {
-    await fetch(`http://localhost:3000/products/${productId}/raw-materials/${rawMaterialId}`, {
-      method: "DELETE",
-    })
-    setAssociated((prev) => prev.filter((a) => a.rawMaterial.id !== rawMaterialId))
+    await fetch(
+      `http://localhost:3000/products/${productId}/raw-materials/${rawMaterialId}`,
+      {
+        method: "DELETE",
+      },
+    );
+    setAssociated((prev) =>
+      prev.filter((a) => a.rawMaterial.id !== rawMaterialId),
+    );
   }
 
-  const unassociated = allMaterials.filter((m) => !associatedIds.has(m.id))
-
-  if (!product) return null
+  if (!product) return null;
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <div className="min-w-100 flex flex-col gap-4">
-        <div className="flex items-center gap-4">          
+      <div className="min-w-200 flex flex-col gap-4">
+        <div className="flex items-center gap-4">
           <div>
             <h2 className="text-lg font-semibold">{product.name}</h2>
-            <p className="text-sm text-muted-foreground">Price: ${product.price}</p>
+            <p className="text-sm text-muted-foreground">
+              Price: ${product.price}
+            </p>
           </div>
         </div>
 
@@ -78,10 +121,17 @@ export function ProductDetailPage() {
                     className="flex items-center justify-between px-4 py-2 border-b last:border-0 text-sm"
                   >
                     <div>
-                      <span className="font-medium">{item.rawMaterial.name}</span>
-                      <span className="text-muted-foreground ml-2">- {item.requiredQuantity}</span>
+                      <span className="font-medium">
+                        {item.rawMaterial.name}
+                      </span>
+                      <span className="text-muted-foreground ml-2">
+                        - {item.requiredQuantity}
+                      </span>
                     </div>
-                    <Button size="sm" onClick={() => handleRemove(item.rawMaterial.id)}>
+                    <Button
+                      size="sm"
+                      onClick={() => handleRemove(item.rawMaterial.id)}
+                    >
                       Remove
                     </Button>
                   </div>
@@ -92,10 +142,16 @@ export function ProductDetailPage() {
 
           <div className="flex flex-col gap-2">
             <h3 className="font-medium text-sm">Raw Materials</h3>
+            <Input
+              placeholder="Filter name..."
+              value={rmFilter}
+              onChange={(e) => setRmFilter(e.target.value)}
+              className="max-w-xs"
+            />
             <div className="rounded-md border overflow-hidden">
               {unassociated.length === 0 ? (
                 <p className="text-sm text-muted-foreground p-4 text-center">
-                  All materials already associated.
+                  No materials found.
                 </p>
               ) : (
                 unassociated.map((m) => (
@@ -110,7 +166,10 @@ export function ProductDetailPage() {
                         min={1}
                         value={quantities[m.id] ?? 1}
                         onChange={(e) =>
-                          setQuantities((prev) => ({ ...prev, [m.id]: Number(e.target.value) }))
+                          setQuantities((prev) => ({
+                            ...prev,
+                            [m.id]: Number(e.target.value),
+                          }))
                         }
                         className="border rounded-md px-2 py-1 text-sm w-16 text-center"
                       />
@@ -122,14 +181,39 @@ export function ProductDetailPage() {
                 ))
               )}
             </div>
+            <div className="flex items-center justify-end gap-2">
+              <span className="text-sm text-muted-foreground">
+                Page {rmPageIndex + 1} of {rmPageCount}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRmPageIndex((p) => p - 1)}
+                disabled={rmPageIndex === 0}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRmPageIndex((p) => p + 1)}
+                disabled={rmPageIndex >= rmPageCount - 1}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
-        <div>          
-          <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/" })}>
+        <div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate({ to: "/" })}
+          >
             ← Back
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
