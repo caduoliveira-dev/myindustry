@@ -4,6 +4,8 @@ import type { RawMaterial } from "@/types/RawMaterial";
 import { DataTable } from "./data-table";
 import { UpdateRawMaterialDialog } from "./update-rawmaterial-dialog";
 import { DeleteRawMaterialDialog } from "./delete-rawmaterial-dialog";
+import { CreateRawMaterialDialog } from "./create-rawmaterial-dialog";
+import { Button } from "@/components/ui/button";
 
 export default function RawMaterialPage() {
   const [data, setData] = useState<RawMaterial[]>([]);
@@ -11,6 +13,7 @@ export default function RawMaterialPage() {
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
     const [deletingRawMaterial, setDeletingRawMaterial] = useState<RawMaterial | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:3000/raw-materials")
@@ -24,6 +27,10 @@ export default function RawMaterialPage() {
   
     function handleDeleteSuccess(id: string) {
       setData((prev) => prev.filter((p) => p.id !== id));
+    }
+
+    function handleCreateSuccess(created: RawMaterial) {
+      setData((prev) => [...prev, created]);
     }
 
   return (
@@ -40,6 +47,9 @@ export default function RawMaterialPage() {
       }}
     >
       <div className="container mx-auto">
+        <div className="flex justify-start mb-2">
+          <Button variant="outline" onClick={() => setCreateDialogOpen(true)}>Add Raw Material</Button>
+        </div>
         <DataTable columns={columns} data={data} />
         <UpdateRawMaterialDialog
           rawmaterial={editingRawMaterial}
@@ -52,6 +62,11 @@ export default function RawMaterialPage() {
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
           onSuccess={handleDeleteSuccess}
+        />
+        <CreateRawMaterialDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onSuccess={handleCreateSuccess}
         />
       </div>
     </RawMaterialActionsContext.Provider>
