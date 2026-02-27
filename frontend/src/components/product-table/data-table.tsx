@@ -1,19 +1,12 @@
 "use client";
 
-import React from "react";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getFilteredRowModel,
 } from "@tanstack/react-table";
 
-import type {
-  ColumnDef,
-  PaginationState,
-  OnChangeFn,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
+import type { ColumnDef, PaginationState, OnChangeFn } from "@tanstack/react-table";
 
 import {
   Table,
@@ -32,6 +25,8 @@ interface DataTableProps<TData, TValue> {
   pageCount: number;
   pagination: PaginationState;
   onPaginationChange: OnChangeFn<PaginationState>;
+  nameFilter: string;
+  onNameFilterChange: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -40,19 +35,16 @@ export function DataTable<TData, TValue>({
   pageCount,
   pagination,
   onPaginationChange,
+  nameFilter,
+  onNameFilterChange,
 }: DataTableProps<TData, TValue>) {
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     pageCount,
-    state: { pagination, columnFilters },
+    state: { pagination },
     onPaginationChange,
   });
 
@@ -61,10 +53,8 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center pb-2">
         <Input
           placeholder="Filter name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
+          value={nameFilter}
+          onChange={(e) => onNameFilterChange(e.target.value)}
           className="max-w-xs"
         />
       </div>
@@ -73,18 +63,16 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>

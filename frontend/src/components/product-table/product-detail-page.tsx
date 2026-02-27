@@ -23,9 +23,9 @@ export function ProductDetailPage() {
       .then((res) => res.json())
       .then(setAssociated)
 
-    fetch("http://localhost:3000/raw-materials")
+    fetch("http://localhost:3000/raw-materials?size=1000")
       .then((res) => res.json())
-      .then(setAllMaterials)
+      .then((result) => setAllMaterials(result.content))
   }, [productId])
 
   const associatedIds = new Set(associated.map((a) => a.rawMaterial.id))

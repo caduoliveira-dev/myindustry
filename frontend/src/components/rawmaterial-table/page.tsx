@@ -16,6 +16,7 @@ export default function RawMaterialPage() {
     pageIndex: 0,
     pageSize: 10,
   });
+  const [nameFilter, setNameFilter] = useState("");
   const [editingRawMaterial, setEditingRawMaterial] =
     useState<RawMaterial | null>(null);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -24,10 +25,13 @@ export default function RawMaterialPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
-  function fetchPage(pageIndex: number, pageSize: number) {
-    fetch(
-      `http://localhost:3000/raw-materials?page=${pageIndex}&size=${pageSize}`,
-    )
+  function fetchPage(pageIndex: number, pageSize: number, name: string) {
+    const params = new URLSearchParams({
+      page: String(pageIndex),
+      size: String(pageSize),
+    });
+    if (name) params.set("name", name);
+    fetch(`http://localhost:3000/raw-materials?${params}`)
       .then((res) => res.json())
       .then((result: PageResponse<RawMaterial>) => {
         setData(result.content);
@@ -35,20 +39,33 @@ export default function RawMaterialPage() {
       });
   }
 
+  // Fetch on pagination change (captures current nameFilter from closure)
   useEffect(() => {
-    fetchPage(pagination.pageIndex, pagination.pageSize);
+    fetchPage(pagination.pageIndex, pagination.pageSize, nameFilter);
   }, [pagination]);
+
+  // Debounce filter: after 300ms, reset to page 0 and fetch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (pagination.pageIndex === 0) {
+        fetchPage(0, pagination.pageSize, nameFilter);
+      } else {
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [nameFilter]);
 
   function handleUpdateSuccess(updated: RawMaterial) {
     setData((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   }
 
   function handleDeleteSuccess() {
-    fetchPage(pagination.pageIndex, pagination.pageSize);
+    fetchPage(pagination.pageIndex, pagination.pageSize, nameFilter);
   }
 
   function handleCreateSuccess() {
-    fetchPage(pagination.pageIndex, pagination.pageSize);
+    fetchPage(pagination.pageIndex, pagination.pageSize, nameFilter);
   }
 
   return (
@@ -76,6 +93,8 @@ export default function RawMaterialPage() {
           pageCount={pageCount}
           pagination={pagination}
           onPaginationChange={setPagination}
+          nameFilter={nameFilter}
+          onNameFilterChange={setNameFilter}
         />
         <UpdateRawMaterialDialog
           rawmaterial={editingRawMaterial}
