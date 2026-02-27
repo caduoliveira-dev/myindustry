@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export const ProductActionsContext = createContext<{
+  onView: (product: Product) => void
   onUpdate: (product: Product) => void
   onDelete: (product: Product) => void
-}>({ onUpdate: () => {}, onDelete: () => {} });
+}>({ onView: () => {}, onUpdate: () => {}, onDelete: () => {} });
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -30,7 +31,7 @@ export const columns: ColumnDef<Product>[] = [
     id: "actions",
     cell: ({ row }) => {
       const product = row.original
-      const { onUpdate, onDelete } = useContext(ProductActionsContext)
+      const { onView, onUpdate, onDelete } = useContext(ProductActionsContext)
 
       return (
         <DropdownMenu>
@@ -43,6 +44,7 @@ export const columns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onView(product)}>View</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onUpdate(product)}>Update</DropdownMenuItem>
             <DropdownMenuItem variant="destructive" onClick={() => onDelete(product)}>Delete</DropdownMenuItem>
           </DropdownMenuContent>

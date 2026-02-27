@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { columns, ProductActionsContext } from "./columns";
 import type { Product } from "@/types/Product";
 import { DataTable } from "./data-table";
@@ -8,6 +9,7 @@ import { CreateProductDialog } from "./create-product-dialog";
 import { Button } from "@/components/ui/button";
 
 export default function ProductPage() {
+  const navigate = useNavigate();
   const [data, setData] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -36,6 +38,7 @@ export default function ProductPage() {
   return (
     <ProductActionsContext.Provider
       value={{
+        onView: (product) => navigate({ to: "/products/$productId", params: { productId: product.id } }),
         onUpdate: (product) => {
           setEditingProduct(product);
           setUpdateDialogOpen(true);
