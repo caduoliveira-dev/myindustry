@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { columns } from "./columns";
+import { columns, ProductActionsContext } from "./columns";
 import type { Product } from "@/types/Product";
 import { DataTable } from "./data-table";
-import { Button } from "../ui/button";
+import { UpdateProductDialog } from "./update-product-dialog";
+import { DeleteProductDialog } from "./delete-product-dialog";
 
 export default function ProductPage() {
   const [data, setData] = useState<Product[]>([]);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+  const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:3000/products")
@@ -13,9 +18,42 @@ export default function ProductPage() {
       .then((result) => setData(result));
   }, []);
 
+  function handleUpdateSuccess(updated: Product) {
+    setData((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  }
+
+  function handleDeleteSuccess(id: string) {
+    setData((prev) => prev.filter((p) => p.id !== id));
+  }
+
   return (
-    <div className="container mx-auto">
-      <DataTable columns={columns} data={data} />
-    </div>
+    <ProductActionsContext.Provider
+      value={{
+        onUpdate: (product) => {
+          setEditingProduct(product);
+          setUpdateDialogOpen(true);
+        },
+        onDelete: (product) => {
+          setDeletingProduct(product);
+          setDeleteDialogOpen(true);
+        },
+      }}
+    >
+      <div className="container mx-auto">
+        <DataTable columns={columns} data={data} />
+        <UpdateProductDialog
+          product={editingProduct}
+          open={updateDialogOpen}
+          onOpenChange={setUpdateDialogOpen}
+          onSuccess={handleUpdateSuccess}
+        />
+        <DeleteProductDialog
+          product={deletingProduct}
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          onSuccess={handleDeleteSuccess}
+        />
+      </div>
+    </ProductActionsContext.Provider>
   );
 }

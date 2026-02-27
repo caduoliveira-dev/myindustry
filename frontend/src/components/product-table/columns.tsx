@@ -1,5 +1,21 @@
+import { createContext, useContext } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Product } from "@/types/Product";
+import { MoreHorizontal } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+export const ProductActionsContext = createContext<{
+  onUpdate: (product: Product) => void
+  onDelete: (product: Product) => void
+}>({ onUpdate: () => {}, onDelete: () => {} });
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -9,5 +25,29 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "price",
     header: "Price",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const product = row.original
+      const { onUpdate, onDelete } = useContext(ProductActionsContext)
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onUpdate(product)}>Update</DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onClick={() => onDelete(product)}>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
   },
 ];
