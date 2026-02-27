@@ -29,7 +29,10 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
-    public Page<ProductEntity> findAll(Pageable pageable) {
+    public Page<ProductEntity> findAll(String name, Pageable pageable) {
+        if (name != null && !name.isBlank()) {
+            return repository.findByNameContainingIgnoreCase(name, pageable);
+        }
         return repository.findAll(pageable);
     }
 

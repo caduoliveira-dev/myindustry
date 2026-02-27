@@ -30,8 +30,9 @@ public class ProductController {
     @GetMapping
     public Page<ProductEntity> findAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return service.findAll(PageRequest.of(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name) {
+        return service.findAll(name, PageRequest.of(page, size));
     }
 
     @PutMapping("/{id}")

@@ -29,7 +29,10 @@ public class RawMaterialService {
                 .orElseThrow(() -> new RuntimeException("Raw material not found"));
     }
 
-    public Page<RawMaterialEntity> findAll(Pageable pageable) {
+    public Page<RawMaterialEntity> findAll(String name, Pageable pageable) {
+        if (name != null && !name.isBlank()) {
+            return repository.findByNameContainingIgnoreCase(name, pageable);
+        }
         return repository.findAll(pageable);
     }
 
