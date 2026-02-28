@@ -37,7 +37,7 @@ export const columns: ColumnDef<Product>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="h-8 w-8 p-0">
+            <Button data-testid="actions-trigger" variant="secondary" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -48,7 +48,7 @@ export const columns: ColumnDef<Product>[] = [
             <DropdownMenuItem onClick={() => onView(product)}>
               View
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onUpdate(product)}>
+            <DropdownMenuItem data-testid="action-update" onClick={() => onUpdate(product)}>
               Update
             </DropdownMenuItem>
             <DropdownMenuItem

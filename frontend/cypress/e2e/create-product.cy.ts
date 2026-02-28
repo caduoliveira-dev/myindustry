@@ -1,6 +1,5 @@
-const url = "http://localhost:5173";
-
 describe("Create Product", () => {
+  const url = "http://localhost:5173";
   beforeEach(() => {
     cy.visit(`${url}`);
     cy.get("#ProductTrigger").click();
