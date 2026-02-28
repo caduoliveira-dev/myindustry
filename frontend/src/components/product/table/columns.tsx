@@ -45,7 +45,7 @@ export const columns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onView(product)}>
+            <DropdownMenuItem data-testid="action-view" onClick={() => onView(product)}>
               View
             </DropdownMenuItem>
             <DropdownMenuItem data-testid="action-update" onClick={() => onUpdate(product)}>

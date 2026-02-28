@@ -115,7 +115,7 @@ export function ProductDetailPage() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <h3 className="font-medium text-sm">Associated Raw Materials</h3>
+            <h3 className="font-medium text-sm">Associated</h3>
             <div className="rounded-md border overflow-hidden">
               {associated.length === 0 ? (
                 <p className="text-sm text-muted-foreground p-4 text-center">
@@ -136,6 +136,7 @@ export function ProductDetailPage() {
                       </span>
                     </div>
                     <Button
+                      data-testid="btn-remove"
                       size="sm"
                       onClick={() => handleRemove(item.rawMaterial.id)}
                     >
@@ -150,6 +151,7 @@ export function ProductDetailPage() {
           <div className="flex flex-col gap-2">
             <h3 className="font-medium text-sm">Raw Materials</h3>
             <Input
+              id="filterName"
               placeholder="Filter name..."
               value={rmFilter}
               onChange={(e) => setRmFilter(e.target.value)}
@@ -181,6 +183,7 @@ export function ProductDetailPage() {
                         className="border rounded-md px-2 py-1 text-sm w-16 text-center"
                       />
                       <Button
+                        data-testid="btn-associate"
                         variant="secondary"
                         size="sm"
                         onClick={() => handleAssociate(m.id)}
