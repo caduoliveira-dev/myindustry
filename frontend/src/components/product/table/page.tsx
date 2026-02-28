@@ -102,6 +102,7 @@ export default function ProductPage() {
           <div className="flex-1 w-full">
             <div className="flex justify-start mb-2">
               <Button
+                id="AddProduct"
                 variant="outline"
                 onClick={() => setCreateDialogOpen(true)}
               >

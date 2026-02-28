@@ -1,27 +1,28 @@
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import type { Product } from "@/types/Product"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import type { Product } from "@/types/Product";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   price: z.number().positive("Price must be positive"),
-})
+});
 
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema>;
 
 interface CreateProductDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: (created: Product) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: (created: Product) => void;
 }
 
 export function CreateProductDialog({
@@ -36,18 +37,19 @@ export function CreateProductDialog({
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-  })
+  });
 
   async function onSubmit(data: FormData) {
     const res = await fetch("http://localhost:3000/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
-    })
-    const created: Product = await res.json()
-    onSuccess(created)
-    reset()
-    onOpenChange(false)
+    });
+    const created: Product = await res.json();
+    toast.success("Product successfully registered!");
+    onSuccess(created);
+    reset();
+    onOpenChange(false);
   }
 
   return (
@@ -67,7 +69,9 @@ export function CreateProductDialog({
               className="border rounded-md px-3 py-2 text-sm"
             />
             {errors.name && (
-              <span className="text-destructive text-xs">{errors.name.message}</span>
+              <span className="text-destructive text-xs">
+                {errors.name.message}
+              </span>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
@@ -82,19 +86,31 @@ export function CreateProductDialog({
               className="border rounded-md px-3 py-2 text-sm"
             />
             {errors.price && (
-              <span className="text-destructive text-xs">{errors.price.message}</span>
+              <span className="text-destructive text-xs">
+                {errors.price.message}
+              </span>
             )}
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              id="btnCancel"
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
-            <Button variant="secondary" type="submit" disabled={isSubmitting}>
+            <Button
+              id="btnSubmit"
+              variant="secondary"
+              type="submit"
+              disabled={isSubmitting}
+            >
               Create
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
