@@ -84,7 +84,7 @@ public class ProductRawMaterialService {
             ));
         }
 
-        items.sort(Comparator.comparingDouble(ProductionItemResponse::totalValue).reversed());
+        items.sort(Comparator.comparingDouble(ProductionItemResponse::unitPrice).reversed());
 
         return new ProductionSuggestionResponse(items, grandTotal);
     }
