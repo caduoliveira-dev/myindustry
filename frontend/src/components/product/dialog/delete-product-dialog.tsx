@@ -9,6 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface DeleteProductDialogProps {
   product: Product | null
@@ -30,6 +31,7 @@ export function DeleteProductDialog({
     await fetch(`http://localhost:3000/products/${product!.id}`, {
       method: "DELETE",
     })
+    toast.success("Product successfully deleted!")
     onSuccess(product!.id)
     setIsDeleting(false)
     onOpenChange(false)
@@ -45,10 +47,10 @@ export function DeleteProductDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button id="btnCancel" type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button type="button" variant="default" disabled={isDeleting} onClick={handleDelete}>
+          <Button id="btnDelete" type="button" variant="default" disabled={isDeleting} onClick={handleDelete}>
             Delete
           </Button>
         </DialogFooter>

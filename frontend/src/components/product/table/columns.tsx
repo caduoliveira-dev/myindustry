@@ -52,6 +52,7 @@ export const columns: ColumnDef<Product>[] = [
               Update
             </DropdownMenuItem>
             <DropdownMenuItem
+              data-testid="action-delete"
               variant="destructive"
               onClick={() => onDelete(product)}
             >
