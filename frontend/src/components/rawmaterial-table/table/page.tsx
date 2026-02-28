@@ -81,7 +81,7 @@ export default function RawMaterialPage() {
     >
       <div className="container mx-auto px-4">
         <div className="flex justify-start mb-2">
-          <Button variant="outline" onClick={() => setCreateDialogOpen(true)}>
+          <Button id="AddRawMaterial" variant="outline" onClick={() => setCreateDialogOpen(true)}>
             Add Raw Material
           </Button>
         </div>

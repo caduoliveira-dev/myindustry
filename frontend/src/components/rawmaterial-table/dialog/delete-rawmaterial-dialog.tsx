@@ -9,6 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface DeleteRawMaterialDialogProps {
   rawmaterial: RawMaterial | null
@@ -30,6 +31,7 @@ export function DeleteRawMaterialDialog({
     await fetch(`http://localhost:3000/raw-materials/${rawmaterial!.id}`, {
       method: "DELETE",
     })
+    toast.success("Raw material successfully deleted!")
     onSuccess(rawmaterial!.id)
     setIsDeleting(false)
     onOpenChange(false)
@@ -45,10 +47,10 @@ export function DeleteRawMaterialDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button id="btnCancel" type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button type="button" variant="default" disabled={isDeleting} onClick={handleDelete}>
+          <Button id="btnDelete" type="button" variant="default" disabled={isDeleting} onClick={handleDelete}>
             Delete
           </Button>
         </DialogFooter>

@@ -11,6 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -54,6 +55,7 @@ export function UpdateRawMaterialDialog({
       body: JSON.stringify(data),
     })
     const updated: RawMaterial = await res.json()
+    toast.success("Raw material successfully modified!")
     onSuccess(updated)
     onOpenChange(false)
   }
@@ -83,7 +85,7 @@ export function UpdateRawMaterialDialog({
               Stock
             </label>
             <input
-              id="price"
+              id="stockQuantity"
               type="number"
               step="0.01"
               {...register("stockQuantity", {valueAsNumber: true})}
@@ -95,13 +97,14 @@ export function UpdateRawMaterialDialog({
           </div>
           <DialogFooter>
             <Button
+              id="btnCancel"
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button id="btnSubmit" type="submit" disabled={isSubmitting}>
               Save
             </Button>
           </DialogFooter>
