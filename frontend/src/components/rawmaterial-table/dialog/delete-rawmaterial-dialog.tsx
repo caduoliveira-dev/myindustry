@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { API_URL } from "@/lib/api"
 
 interface DeleteRawMaterialDialogProps {
   rawmaterial: RawMaterial | null
@@ -28,7 +29,7 @@ export function DeleteRawMaterialDialog({
 
   async function handleDelete() {
     setIsDeleting(true)
-    await fetch(`http://localhost:3000/raw-materials/${rawmaterial!.id}`, {
+    await fetch(`${API_URL}/raw-materials/${rawmaterial!.id}`, {
       method: "DELETE",
     })
     toast.success("Raw material successfully deleted!")

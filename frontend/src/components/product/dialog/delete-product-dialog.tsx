@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { API_URL } from "@/lib/api"
 
 interface DeleteProductDialogProps {
   product: Product | null
@@ -28,7 +29,7 @@ export function DeleteProductDialog({
 
   async function handleDelete() {
     setIsDeleting(true)
-    await fetch(`http://localhost:3000/products/${product!.id}`, {
+    await fetch(`${API_URL}/products/${product!.id}`, {
       method: "DELETE",
     })
     toast.success("Product successfully deleted!")

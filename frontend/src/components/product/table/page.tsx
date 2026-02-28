@@ -10,6 +10,7 @@ import { DeleteProductDialog } from "../dialog/delete-product-dialog";
 import { CreateProductDialog } from "../dialog/create-product-dialog";
 import { Button } from "@/components/ui/button";
 import type { PaginationState } from "@tanstack/react-table";
+import { API_URL } from "@/lib/api";
 
 export default function ProductPage() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function ProductPage() {
       size: String(pageSize),
     });
     if (name) params.set("name", name);
-    fetch(`http://localhost:3000/products?${params}`)
+    fetch(`${API_URL}/products?${params}`)
       .then((res) => res.json())
       .then((result: PageResponse<Product>) => {
         setData(result.content);
@@ -73,7 +74,7 @@ export default function ProductPage() {
 
   function handleGenerateSuggestion() {
     setLoadingSuggestion(true);
-    fetch("http://localhost:3000/production/suggestion")
+    fetch(`${API_URL}/production/suggestion`)
       .then((res) => res.json())
       .then((result: ProductionSuggestion) => setSuggestion(result))
       .finally(() => setLoadingSuggestion(false));

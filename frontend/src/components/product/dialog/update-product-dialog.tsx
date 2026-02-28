@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { API_URL } from "@/lib/api";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -49,7 +50,7 @@ export function UpdateProductDialog({
   }, [product, reset]);
 
   async function onSubmit(data: FormData) {
-    const res = await fetch(`http://localhost:3000/products/${product!.id}`, {
+    const res = await fetch(`${API_URL}/products/${product!.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

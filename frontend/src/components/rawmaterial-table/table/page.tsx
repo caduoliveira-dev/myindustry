@@ -8,6 +8,7 @@ import { DeleteRawMaterialDialog } from "../dialog/delete-rawmaterial-dialog";
 import { CreateRawMaterialDialog } from "../dialog/create-rawmaterial-dialog";
 import { Button } from "@/components/ui/button";
 import type { PaginationState } from "@tanstack/react-table";
+import { API_URL } from "@/lib/api";
 
 export default function RawMaterialPage() {
   const [data, setData] = useState<RawMaterial[]>([]);
@@ -31,7 +32,7 @@ export default function RawMaterialPage() {
       size: String(pageSize),
     });
     if (name) params.set("name", name);
-    fetch(`http://localhost:3000/raw-materials?${params}`)
+    fetch(`${API_URL}/raw-materials?${params}`)
       .then((res) => res.json())
       .then((result: PageResponse<RawMaterial>) => {
         setData(result.content);

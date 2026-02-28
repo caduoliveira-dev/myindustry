@@ -6,6 +6,7 @@ import type { ProductRawMaterial } from "@/types/ProductRawMaterial";
 import type { PageResponse } from "@/types/Page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { API_URL } from "@/lib/api";
 
 export function ProductDetailPage() {
   const { productId } = useParams({ from: "/products/$productId" });
@@ -27,7 +28,7 @@ export function ProductDetailPage() {
       size: String(RM_PAGE_SIZE),
     });
     if (name) params.set("name", name);
-    fetch(`http://localhost:3000/raw-materials?${params}`)
+    fetch(`${API_URL}/raw-materials?${params}`)
       .then((res) => res.json())
       .then((result: PageResponse<RawMaterial>) => {
         setAllMaterials(result.content);
@@ -36,11 +37,11 @@ export function ProductDetailPage() {
   }
 
   useEffect(() => {
-    fetch(`http://localhost:3000/products/${productId}`)
+    fetch(`${API_URL}/products/${productId}`)
       .then((res) => res.json())
       .then(setProduct);
 
-    fetch(`http://localhost:3000/products/${productId}/raw-materials`)
+    fetch(`${API_URL}/products/${productId}/raw-materials`)
       .then((res) => res.json())
       .then(setAssociated);
   }, [productId]);
@@ -68,7 +69,7 @@ export function ProductDetailPage() {
   async function handleAssociate(rawMaterialId: string) {
     const requiredQuantity = quantities[rawMaterialId] ?? 1;
     const res = await fetch(
-      `http://localhost:3000/products/${productId}/raw-materials`,
+      `${API_URL}/products/${productId}/raw-materials`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,7 +83,7 @@ export function ProductDetailPage() {
 
   async function handleRemove(rawMaterialId: string) {
     await fetch(
-      `http://localhost:3000/products/${productId}/raw-materials/${rawMaterialId}`,
+      `${API_URL}/products/${productId}/raw-materials/${rawMaterialId}`,
       {
         method: "DELETE",
       },
