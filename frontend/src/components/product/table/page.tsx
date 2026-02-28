@@ -124,6 +124,7 @@ export default function ProductPage() {
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm">Production Suggestion</h3>
               <Button
+                data-testid="btn-generate"
                 size="sm"
                 onClick={handleGenerateSuggestion}
                 disabled={loadingSuggestion}
