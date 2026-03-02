@@ -105,38 +105,45 @@ class ProductRawMaterialServiceTest {
     }
 
     @Test
-    @DisplayName("Should suggest production prioritizing higher-priced products and deducting shared stock")
+    @DisplayName("Should order suggestion by unit price descending, not by total production value")
     void suggestProduction() {
-        // Produto A: 30.00 reais (3000 centavos) — mais caro
-        // Produto B: 15.00 reais (1500 centavos)
+        // Produto A: R$110,00 (11000 centavos) — produz 1 unidade, total R$110
+        // Produto B: R$90,00  (9000 centavos)  — produz 2 unidades, total R$180
+        // Produto A deve aparecer primeiro: maior preço unitário, mesmo tendo menor custo total
         UUID productAId = UUID.randomUUID();
         UUID productBId = UUID.randomUUID();
-        UUID rmId = UUID.randomUUID();
+        UUID rmAId = UUID.randomUUID();
+        UUID rmBId = UUID.randomUUID();
 
-        ProductEntity productA = new ProductEntity(productAId, "Engrenagem", 3000);
-        ProductEntity productB = new ProductEntity(productBId, "Parafuso", 1500);
-        RawMaterialEntity rm = new RawMaterialEntity(rmId, "Aço", 10);
+        ProductEntity productA = new ProductEntity(productAId, "Engrenagem", 11000);
+        ProductEntity productB = new ProductEntity(productBId, "Parafuso", 9000);
+        RawMaterialEntity rmA = new RawMaterialEntity(rmAId, "Aço", 3);
+        RawMaterialEntity rmB = new RawMaterialEntity(rmBId, "Ferro", 6);
 
-        // Produto A precisa de 3 unidades de Aço — produz floor(10/3) = 3, consome 9, sobra 1
-        // Produto B precisa de 2 unidades de Aço — produz floor(1/2) = 0, excluído
-        ProductRawMaterialId idA = new ProductRawMaterialId(productAId, rmId);
-        ProductRawMaterialId idB = new ProductRawMaterialId(productBId, rmId);
-        ProductRawMaterialEntity assocA = new ProductRawMaterialEntity(idA, productA, rm, 3);
-        ProductRawMaterialEntity assocB = new ProductRawMaterialEntity(idB, productB, rm, 2);
+        // Produto A: precisa de 3 unidades de Aço  → floor(3/3) = 1
+        // Produto B: precisa de 3 unidades de Ferro → floor(6/3) = 2
+        ProductRawMaterialId idA = new ProductRawMaterialId(productAId, rmAId);
+        ProductRawMaterialId idB = new ProductRawMaterialId(productBId, rmBId);
+        ProductRawMaterialEntity assocA = new ProductRawMaterialEntity(idA, productA, rmA, 3);
+        ProductRawMaterialEntity assocB = new ProductRawMaterialEntity(idB, productB, rmB, 3);
 
         when(productRepository.findAllByOrderByPriceDesc()).thenReturn(List.of(productA, productB));
-        when(rawMaterialRepository.findAll()).thenReturn(List.of(rm));
+        when(rawMaterialRepository.findAll()).thenReturn(List.of(rmA, rmB));
         when(productRawMaterialRepository.findByIdProductId(productAId)).thenReturn(List.of(assocA));
         when(productRawMaterialRepository.findByIdProductId(productBId)).thenReturn(List.of(assocB));
 
         ProductionSuggestionResponse response = service.suggestProduction();
 
-        assertEquals(1, response.items().size());
-        assertEquals("Engrenagem", response.items().getFirst().productName());
-        assertEquals(3, response.items().getFirst().unitsToProduce());
-        assertEquals(30.0, response.items().getFirst().unitPrice());
-        assertEquals(90.0, response.items().getFirst().totalValue());
-        assertEquals(90.0, response.grandTotal());
+        assertEquals(2, response.items().size());
+        assertEquals("Engrenagem", response.items().get(0).productName());
+        assertEquals(1, response.items().get(0).unitsToProduce());
+        assertEquals(110.0, response.items().get(0).unitPrice());
+        assertEquals(110.0, response.items().get(0).totalValue());
+        assertEquals("Parafuso", response.items().get(1).productName());
+        assertEquals(2, response.items().get(1).unitsToProduce());
+        assertEquals(90.0, response.items().get(1).unitPrice());
+        assertEquals(180.0, response.items().get(1).totalValue());
+        assertEquals(290.0, response.grandTotal());
     }
 
     @Test

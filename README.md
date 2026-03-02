@@ -20,7 +20,7 @@ Layered architecture: Controller → Service → Repository (JPA) → PostgreSQL
 - **Migrations**: Flyway in `src/main/resources/db/migration/`
 - Prices are stored as **integers (cents)** to avoid floating-point errors
 
-**Production Suggestion Algorithm** (`ProductRawMaterialService.suggestProduction()`): Iterates products ordered by price descending, calculates max producible units given current raw material stock, deducts consumed stock, and returns a ranked suggestion list.
+**Production Suggestion Algorithm** (`ProductRawMaterialService.suggestProduction()`): Iterates products ordered by price descending, calculates max producible units per product based on available stock (stock is NOT shared/deducted between products), and returns the list sorted by unit price descending
 
 ### Frontend (React 19 + Vite, port 5173)
 

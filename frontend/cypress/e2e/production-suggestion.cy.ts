@@ -10,7 +10,7 @@ describe("Production Suggestion", () => {
     beforeEach(() => {
       cy.request("POST", "http://localhost:3000/products", {
         name: "produto sugestao",
-        price: 20,
+        price: 2000,
       }).then((productRes) => {
         cy.request("POST", "http://localhost:3000/raw-materials", {
           name: "materia sugestao",
